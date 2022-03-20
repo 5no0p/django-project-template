@@ -1,0 +1,28 @@
+import datetime
+
+from django.conf import settings
+from django.utils.translation import gettext_lazy as _
+from django.db import models
+
+from .manager import SoftDeleteManager
+
+class TrakingModel(models.Model):
+    """
+    Track model for create, update and delete actions.
+    """
+    created_at = models.DateField(default=datetime.date.today, null=True, blank=True,verbose_name=_('Created at'))
+    updated_at = models.DateField(auto_now=True, null=True, blank=True, verbose_name=_('Updated at'))
+    deleted_at = models.DateTimeField(auto_now=True, null=True, blank=True, verbose_name=_('Deleted at'))
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,related_name='creted_%(app_label)s_%(class)s_by_me', related_query_name="%(app_label)s_%(class)ss", null=True, blank=True, verbose_name=_('Created by'))
+    updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,related_name='updated_%(app_label)s_%(class)s_by_me', related_query_name="%(app_label)s_%(class)ss", null=True, blank=True, verbose_name=_('Updated by'))
+    deleted_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,related_name='deleted_%(app_label)s_%(class)s_by_me', related_query_name="%(app_label)s_%(class)ss", null=True, blank=True, verbose_name=_('Deleted by'))
+    
+    objects = SoftDeleteManager()
+    all_objects = models.Manager()
+    
+    class Meta:
+        abstract = True
+
+    def delete(self):
+        self.deleted_at=datetime.timezone.now()
+        self.save()

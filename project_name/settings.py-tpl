@@ -26,7 +26,7 @@ class Common(Configuration):
     ALLOWED_HOSTS = values.ListValue([])
 
     # Application definition
-    INSTALLED_APPS = [
+    DJANGO_APPS = [
         'django.contrib.admin',
         'django.contrib.auth',
         'django.contrib.contenttypes',
@@ -34,12 +34,16 @@ class Common(Configuration):
         'django.contrib.messages',
         'whitenoise.runserver_nostatic',
         'django.contrib.staticfiles',
-
-        'django_extensions',
-        'debug_toolbar',
-
-        '{{ project_name }}.users',
     ]
+    EXTENSIONS_APPS = [
+        
+    ]
+    OWEND_APPS = [
+        '{{ project_name }}.apps.users',
+        '{{ project_name }}.apps.core',
+    ]
+
+    INSTALLED_APPS = APPS_PLACED_BEFORE_DJANGO_APPS + DJANGO_APPS + OWEND_APPS + EXTENSIONS_APPS
 
     MIDDLEWARE = [
         'django.middleware.security.SecurityMiddleware',
@@ -131,6 +135,13 @@ class Development(Common):
     INTERNAL_IPS = [
         '127.0.0.1'
     ]
+
+    DEV_APPS = [
+        'django_extensions',
+        'debug_toolbar',
+    ]
+
+    INSTALLED_APPS = Common.INSTALLED_APPS + DEV_APPS
 
     MIDDLEWARE = Common.MIDDLEWARE + [
         'debug_toolbar.middleware.DebugToolbarMiddleware'

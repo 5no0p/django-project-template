@@ -1,0 +1,4 @@
+from .models import TrakingModel
+
+class ModelMixin(TrakingModel):
+    pass
